@@ -1,0 +1,117 @@
+fn main() {
+    let inp_strings: String = String::from("(33+45/3*(2+9)-50)");
+    // let mut inp_strings: String = String::new();
+    // std::io::stdin()
+    //     .read_line(&mut inp_strings)
+    //     .expect("Failed to read inputs");
+    println!("{}", inp_strings);
+
+    let mut str_vec: Vec<String> = Vec::with_capacity(inp_strings.len());
+
+    let mut num_temp: String = String::new();
+    for i in inp_strings.trim().chars() {
+        // println!("{}", i);
+        match i {
+            '(' | ')' | '+' | '-' | '*' | '/' | '^' => {
+                if num_temp != "" {
+                    // println!("num_temp {}",num_temp);
+                    str_vec.push(num_temp);
+                    num_temp = String::new(); 
+                }
+                str_vec.push(i.to_string());
+            },
+            _ => {
+                num_temp.push(i)
+            }
+        }
+        // str_vec.push(i);
+    }
+    if num_temp != "" {
+        str_vec.push(num_temp);
+    }
+    println!("{:?}", str_vec);
+
+    let mut mystack: Vec<String> = Vec::with_capacity(str_vec.len());
+    let length_stack = str_vec.len();
+    let mut letter : Vec<String> = Vec::new();
+    let mut postfix: Vec<String> = Vec::new();
+
+    for x in str_vec {
+        println!("{x}");
+        match x.as_str() {
+            "+" | "-" | "*" | "/" | "^" => {
+                if mystack.len() == 0 {
+                    mystack.push(x)
+                } else {
+                    if priority(&x) > priority(mystack.last().unwrap()) {
+                        mystack.push(x);
+    
+                    } else {
+                        while priority(&x) <= priority(mystack.last().unwrap()) {
+                            postfix.push(mystack.pop().unwrap());
+                            if mystack.last() == None {
+                                break
+                            }
+                        }
+                        mystack.push(x);
+                    }
+                }
+
+
+
+            },
+            "(" => {
+                mystack.push(x);
+            },
+            ")" => {
+                while mystack.last().unwrap() != "(" {
+                    postfix.push(mystack.pop().unwrap());
+                }
+                mystack.pop();
+                // for z in mystack.iter() {
+                //     letter = mystack.pop().unwrap();
+                //     if letter == "(" {
+                //         println!("I need to stop here")
+                //     }
+                //     // if mystack
+                //     println!("mystack: {}", z)
+                // }
+            },
+            _ => {
+                // println!("{}", x)
+                postfix.push(x)
+            }
+        }
+    }
+    println!("Stack: {:?}", mystack);
+    println!("PostFix: {:?}", postfix);
+
+
+}
+
+// fn pop(str_vec: &mut Vec<char>) -> Option<char> {
+//     let poped_value: Option<char> = str_vec.pop();
+//     poped_value
+// }
+
+fn priority(x: &String) -> u8 {
+    if ("+" == x ) | ("-" == x) {
+        1
+    } else if ("*" == x ) | ("/" == x ) {
+        2
+    } else if ("^" == x ) {
+        3
+    } else {
+        0
+    }
+}
+
+// fn push(stack: &mut Vec<String>, item: String, maxsize: usize) {
+//     if stack.len() == maxsize {
+//         // println!("Cant add more elems");
+//     }
+//     else {
+//         stack.push(item);
+//         // println!("Stack: {:?}", stack);
+//     }
+// }
